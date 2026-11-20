@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ivory: #f7f1ea;
+  --color-plum: #3a1d2a;
+  --color-plum-2: #4d2939;
+  --color-mauve: #a67c86;
+  --color-blush: #efdcdc;
+  --color-gold: #c39b55;
+  --color-gold-2: #d4ae6c;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-script: "Pinyon Script", cursive;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-arabic: "Amiri", "Noto Nastaliq Urdu", serif;
+  --animate-marquee: marquee 45s linear infinite;
+  --animate-marquee-rev: marquee 55s linear infinite reverse;
+  @keyframes marquee { to { transform: translateX(-50%); } }
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--color-ivory); }
+
+.uv-sheen { position: absolute; overflow: hidden; }
+.uv-sheen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%); background-size: 250% 100%; animation: uv-sheen 3.6s ease-in-out infinite; mix-blend-mode: soft-light; }
+@keyframes uv-sheen { 0% { background-position: 120% 0 } 60%,100% { background-position: -120% 0 } }
+
+@keyframes uv-float { 50% { translate: 0 -8px; } }
+@keyframes uv-fall { from { transform: translateY(-5vh) rotate(0deg); } to { transform: translateY(110vh) rotate(calc(var(--r) * 540deg)) translateX(calc(var(--r) * 60px)); } }
+@keyframes uv-eq { from { height: 15%; } to { height: 100%; } }
+@keyframes uv-pop-k { from { opacity: 0; transform: translateY(30px) scale(.94); filter: blur(6px); } }
+.uv-pop { animation: uv-pop-k .8s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes uv-step-k { from { opacity: 0; transform: translateY(16px); } }
+.uv-step { animation: uv-step-k .7s cubic-bezier(.2,.8,.2,1) both; }
+.uv-fade { animation: uv-fade-k .7s ease both; }
+@keyframes uv-fade-k { from { opacity: 0; transform: scale(1.04); } }
+.uv-flip { animation: uv-flip-k .45s cubic-bezier(.2,.8,.2,1); }
+@keyframes uv-flip-k { from { transform: rotateX(80deg); opacity: .2; } }
+.uv-swap { animation: uv-swap-k 1.8s ease both; }
+@keyframes uv-swap-k { 0% { opacity: 0; transform: translateY(14px); filter: blur(4px); } 15%,85% { opacity: 1; transform: none; filter: none; } 100% { opacity: 0; transform: translateY(-14px); filter: blur(4px); } }
+.uv-dash { animation: uv-dash-k 2.2s ease forwards; stroke-dashoffset: 300; }
+@keyframes uv-dash-k { to { stroke-dashoffset: 0; } }
+.uv-pin { animation: uv-pin-k 1s 1.6s cubic-bezier(.3,1.6,.5,1) both, uv-float 2.5s 2.6s ease-in-out infinite; }
+@keyframes uv-pin-k { from { opacity: 0; transform: translateY(-40px) scale(.5); } }
+.uv-caret { animation: uv-blink 1s steps(1) infinite; }
+@keyframes uv-blink { 50% { opacity: 0; } }
+.uv-modal { animation: uv-fade-k .4s ease both; }
+.uv-scrollmouse { width: 18px; height: 28px; border: 1.5px solid currentColor; border-radius: 10px; position: relative; }
+.uv-scrollmouse::after { content: ""; position: absolute; left: 50%; top: 5px; width: 2px; height: 6px; margin-left: -1px; border-radius: 2px; background: currentColor; animation: uv-wheel 1.6s infinite; }
+@keyframes uv-wheel { to { transform: translateY(9px); opacity: 0; } }
+
+@property --uv-a { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+.uv-border { background: conic-gradient(from var(--uv-a), #c39b55, #efdcdc, #a67c86, #c39b55); animation: uv-spin 5s linear infinite; }
+@keyframes uv-spin { to { --uv-a: 360deg; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
