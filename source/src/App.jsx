@@ -7,12 +7,14 @@ import { useScrollProgress, usePageProgress, useInView, useTween, useCountUp, us
 /*  BUSINESS SETTINGS – edit these                                     */
 /* ------------------------------------------------------------------ */
 const BRAND = 'The Satin Seal';
+const EMAIL = 'thesatinseal@gmail.com';
+const SOCIALS = [['Instagram', 'https://www.instagram.com/thesatinseal/'], ['TikTok', 'https://www.tiktok.com/@thesatinseal'], ['Facebook', 'https://www.facebook.com/profile.php?id=61597002560660'], ['Pinterest', 'https://uk.pinterest.com/thesatinseal/']];
 const ORDER_URL = '#pricing';            // ← swap for your Payhip / Etsy checkout link
 const TURNAROUND = '3–5 working days';   // ← your real turnaround
 const PLANS = [
-  { name: 'Essential', price: 35, note: 'A collection design, made yours', features: ['Any design from the collection', 'Your names, wording & date', 'Live countdown, map & add-to-calendar', 'One private link to share anywhere', '2 rounds of changes'] },
-  { name: 'Signature', price: 69, note: 'Our most loved', popular: true, features: ['Everything in Essential', 'RSVP with guest list', 'Your photos & a song as it opens', 'English + one more language', 'Matching Save the Date', '4 rounds of changes'] },
-  { name: 'Bespoke', price: 149, note: 'Designed from scratch', features: ['Everything in Signature', 'Custom monogram wax seal', 'Colours matched to your outfits or décor', 'Every part of the day in one invite (ceremony, reception, after-party…)', 'Unlimited languages', 'Priority delivery'] },
+  { name: 'Essential', price: 35, url: 'https://payhip.com/b/23orf', note: 'A collection design, made yours', features: ['Any design from the collection', 'Your names, wording & date', 'Live countdown, map & add-to-calendar', 'One private link to share anywhere', '2 rounds of changes'] },
+  { name: 'Signature', price: 69, url: 'https://payhip.com/b/VJmTW', note: 'Our most loved', popular: true, features: ['Everything in Essential', 'RSVP with guest list', 'Your photos & a song as it opens', 'English + one more language', 'Matching Save the Date', '4 rounds of changes'] },
+  { name: 'Bespoke', price: 149, url: 'https://payhip.com/b/nK0XB', note: 'Designed from scratch', features: ['Everything in Signature', 'Custom monogram wax seal', 'Colours matched to your outfits or décor', 'Every part of the day in one invite (ceremony, reception, after-party…)', 'Unlimited languages', 'Priority delivery'] },
 ];
 const ADDONS = [['Express 48-hour delivery', '+£15'], ['Extra event or day', '+£20'], ['Custom monogram seal', '+£10'], ['Thank-you card after the event', '+£15']];
 const FAQS = [
@@ -21,6 +23,7 @@ const FAQS = [
   ['Can one invite cover several events?', 'Yes. Ceremony and reception, a welcome dinner, a Christmas Eve party and Boxing Day, or a Mehndi, Nikah and Walima: each gets its own section with its own time and venue. Choose Bespoke and we’ll design the whole celebration as one invitation.'],
   ['Can it be in another language?', 'Yes. Signature includes a second language and Bespoke includes as many as you need, from Polish and Spanish to Urdu and Arabic, including right-to-left scripts.'],
   ['How do RSVPs work?', 'Guests reply inside the invitation, saying who’s coming and how many, and you receive every reply.'],
+  ['How do I order?', `Choose your plan and check out securely. You'll instantly get a short guide telling you what to send us at ${EMAIL}: names, date, venue and wording. Questions first? Email us any time.`],
   ['How long does it take?', `You’ll get a private draft to approve within ${TURNAROUND}. Need it sooner? Add express delivery.`],
   ['Is it only for weddings?', 'Not at all: birthdays, Christmas, New Year, engagements, christenings, baby showers, anniversaries, Eid, Diwali and more. If you’re celebrating it, we can seal it.'],
 ];
@@ -510,7 +513,7 @@ function PlanCard({ plan, i }) {
           <ul className="mb-8 space-y-3 text-sm">
             {plan.features.map(f => <li key={f} className="flex gap-3"><span className={plan.popular ? 'text-gold' : 'text-mauve'}>✦</span>{f}</li>)}
           </ul>
-          <Button variant={plan.popular ? 'gold' : 'dark'} className="mt-auto justify-center">Choose {plan.name}</Button>
+          <Button href={plan.url} variant={plan.popular ? 'gold' : 'dark'} className="mt-auto justify-center">Choose {plan.name}</Button>
         </div>
       </div>
     </Reveal>
@@ -579,7 +582,7 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
         <div><Logo light /><p className="mt-4 max-w-xs text-sm text-ivory/60">Interactive digital invitations for every celebration, designed by hand in the UK.</p></div>
         <div className="text-sm"><div className="mb-3 text-[11px] uppercase tracking-[.3em] text-gold">Explore</div>{[['Collection', '#collection'], ['Features', '#features'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([l, h]) => <a key={h} href={h} className="block py-1 text-ivory/70 hover:text-ivory">{l}</a>)}</div>
-        <div className="text-sm"><div className="mb-3 text-[11px] uppercase tracking-[.3em] text-gold">Follow</div>{['Instagram', 'TikTok', 'Facebook', 'Pinterest'].map(s => <a key={s} href="#" className="block py-1 text-ivory/70 hover:text-ivory">{s}</a>)}</div>
+        <div className="text-sm"><div className="mb-3 text-[11px] uppercase tracking-[.3em] text-gold">Follow</div>{SOCIALS.map(([s, h]) => <a key={s} href={h} target="_blank" rel="noopener" className="block py-1 text-ivory/70 hover:text-ivory">{s}</a>)}<a href={`mailto:${EMAIL}`} className="mt-2 block py-1 text-ivory/70 hover:text-ivory">{EMAIL}</a></div>
       </div>
       <div className="mx-auto mt-12 flex max-w-6xl flex-wrap justify-between gap-2 border-t border-ivory/10 pt-6 text-xs text-ivory/45"><span>© 2026 {BRAND} · Bolton, UK</span><span>Invitations worth opening.</span></div>
     </footer>
