@@ -21,6 +21,7 @@ const cloud = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><pat
 const dots = (n, seed) => { let o = '', r = seed; const rnd = () => { r = (r * 9301 + 49297) % 233280; return r / 233280; }; for (let i = 0; i < n; i++) o += `<circle cx="${(rnd() * 400).toFixed(0)}" cy="${(rnd() * 800).toFixed(0)}" r="${(2 + rnd() * 3).toFixed(1)}" fill="#000"/>`; return o; };
 
 export function motifSVG(kind) {
+  if (kind === 'none') return '';
   let g = '';
   if (kind === 'leaves') g = leaf(70, 250, 1.35, -35) + leaf(330, 240, 1.35, 35) + leaf(200, 470, 1.1, 0) + leaf(40, 640, 1.2, -150) + leaf(360, 660, 1.2, 150) + leaf(200, 120, .9, 180) + leaf(120, 420, .8, -80) + leaf(290, 420, .8, 80) + leaf(200, 800, 1.3, 180) + rose(200, 330, 1.1) + rose(60, 470, .8) + rose(340, 480, .8);
   else if (kind === 'islamic') { for (let y = 40; y < 820; y += 80) for (let x = (y / 80 % 2 ? 40 : 0); x < 440; x += 80) g += star8(x, y, .85); g += crescent(200, 400, 1.6) + lantern(80, 220, 1) + lantern(320, 220, 1); }
@@ -35,7 +36,7 @@ export function motifSVG(kind) {
 export function frameSVG(kind) {
   const arch = i => `M${40 + i} 690 L${40 + i} ${170 + i} Q${40 + i} ${40 + i} 200 ${40 + i} Q${360 - i} ${40 + i} ${360 - i} ${170 + i} L${360 - i} 690`;
   const corner = { leaves: (x, y) => rose(x, y, .9), islamic: (x, y) => star8(x, y, .6), balloons: (x, y, r) => balloon(x, y, .45, r), stars: (x, y) => sparkle(x, y, .7), snow: (x, y) => flake(x, y, .6), diya: (x, y) => diya(x, y, .5), clouds: (x, y) => cloud(x, y, .45) }[kind] || ((x, y) => sparkle(x, y, .7));
-  const c = corner(30, 30, -15) + corner(370, 30, 15) + corner(30, 670, -15) + corner(370, 670, 15);
+  const c = kind === 'none' ? '' : corner(30, 30, -15) + corner(370, 30, 15) + corner(30, 670, -15) + corner(370, 670, 15);
   return `<g filter="url(#uv-emb-soft)" fill="none" stroke="#000"><path d="${arch(0)}" stroke-width="3"/><path d="${arch(10)}" stroke-width="1.4"/><rect x="14" y="14" width="372" height="672" rx="4" stroke-width="1.6"/>${c}</g>`;
 }
 

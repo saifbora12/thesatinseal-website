@@ -98,7 +98,7 @@ export default function InviteScene({ theme: t, p = 0, className = '' }) {
         <div className="absolute inset-[13%_12%_9%] flex flex-col items-center justify-center text-center" style={{ gap: '2.6cqw', fontFamily: 'var(--font-serif)' }}>
           {t.arabic && <div style={{ ...lp, ...line(0), fontFamily: 'Amiri, serif', fontSize: '5.2cqw', direction: 'rtl' }}>{t.arabic}</div>}
           <div style={{ ...lp, ...line(1), fontSize: '3.1cqw', letterSpacing: '.28em', textTransform: 'uppercase', fontWeight: 600 }}>{t.kicker}</div>
-          <div style={{ ...nameStyle, ...line(2), fontFamily: 'var(--font-script)', fontSize: '14cqw', lineHeight: .95 }} className="flex flex-col items-center">
+          <div style={{ ...nameStyle, ...line(2), fontFamily: t.nameFont || 'var(--font-script)', fontSize: `${(t.nameScale || 1) * 14}cqw`, lineHeight: .95 }} className="flex flex-col items-center">
             <span>{t.names[0]}</span>{t.amp && <span style={{ fontSize: '.55em', opacity: .8 }}>{t.amp}</span>}<span>{t.names[1]}</span>
           </div>
           <div style={{ ...lp, ...line(3), fontStyle: 'italic', fontSize: '4.3cqw', lineHeight: 1.3 }}>{t.line}</div>

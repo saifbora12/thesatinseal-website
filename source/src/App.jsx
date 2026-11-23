@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import InviteScene, { EmbossDefs, seg, clamp } from './InviteScene.jsx';
 import { THEMES, OCCASIONS } from './themes.js';
+import Designer from './Designer.jsx';
 import { useScrollProgress, usePageProgress, useInView, useTween, useCountUp, useNow, useTilt, useMagnet } from './hooks.js';
 
 /* ------------------------------------------------------------------ */
@@ -30,6 +31,10 @@ const FAQS = [
 ];
 const OCCASION_WORDS = ['Weddings', 'Christmas', 'Birthdays', 'Engagements', 'New Year', 'Christenings', 'Anniversaries', 'Baby showers', 'Eid', 'Diwali', 'Hen parties', 'Nikah', 'Graduations', 'Retirements'];
 const PRICE_FROM = Math.min(...PLANS.map(p => p.price));
+const openStudio = (t) => {
+  if (t) { try { localStorage.setItem('tss-design', JSON.stringify({ occasion: t.occasion, paper: t.c.paper, card: t.c.card, ink: t.c.ink, seal: t.c.s2, ribbon: t.c.r2, foil: t.foil ? 'gold' : 'none', palette: t.name, motif: t.motif, mono: t.mono, kicker: t.kicker, n1: t.names[0], amp: t.amp, n2: t.names[1], line: t.line, date: t.date, venue: t.venue, top: '' })); } catch (e) {} }
+  location.hash = 'design';
+};
 
 /* ------------------------------------------------------------------ */
 const Logo = ({ light }) => (
@@ -89,7 +94,7 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => { const on = () => setScrolled(scrollY > 30); on(); addEventListener('scroll', on, { passive: true }); return () => removeEventListener('scroll', on); }, []);
-  const links = [['Collection', '#collection'], ['Features', '#features'], ['How it works', '#how'], ['Pricing', '#pricing'], ['FAQ', '#faq']];
+  const links = [['Design yours', '#design'], ['Collection', '#collection'], ['Features', '#features'], ['Pricing', '#pricing'], ['FAQ', '#faq']];
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'py-2' : 'py-4'}`}>
       <nav className={`mx-auto flex max-w-6xl items-center justify-between rounded-full px-5 transition-all duration-500 ${scrolled ? 'mx-3 bg-ivory/75 py-2 shadow-[0_8px_30px_-12px_rgba(58,29,42,.35)] backdrop-blur-xl md:mx-auto' : 'py-2'}`}>
@@ -170,7 +175,8 @@ function Hero() {
               <p className="mt-4 max-w-md text-[15px] leading-relaxed text-plum/70 md:mt-6 md:text-lg">{s.body}</p>
             </div>
             <div className={`mt-6 flex flex-wrap items-center gap-3 transition-opacity duration-500 md:mt-8 ${step === 0 || step === 4 ? 'opacity-100' : 'pointer-events-none opacity-0 md:opacity-30'}`}>
-              <Button href="#collection">Explore designs</Button>
+              <Button href="#design">Design your own</Button>
+              <Button href="#collection" variant="ghost">Explore designs</Button>
               <span className="text-sm text-plum/60">From <b className="text-plum">£{PRICE_FROM}</b></span>
             </div>
             <div className={`mt-6 hidden items-center gap-2 text-xs uppercase tracking-[.3em] text-plum/50 transition-opacity md:flex ${step === 0 ? 'opacity-100' : 'opacity-0'}`}>
@@ -301,7 +307,7 @@ function Collection({ onOpen }) {
       <div key={f} className="mx-auto grid max-w-6xl grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
         {list.map((t, i) => <DesignCard key={t.id} t={t} i={i} onOpen={onOpen} />)}
       </div>
-      <Reveal className="mt-14 text-center text-plum/60">Don’t see your occasion? <a href="#pricing" className="font-semibold text-plum underline decoration-gold decoration-2 underline-offset-4">Go Bespoke</a> and we’ll design one from scratch.</Reveal>
+      <Reveal className="mt-14 text-center text-plum/60">Want your own colours, pattern and font? <a href="#design" className="font-semibold text-plum underline decoration-gold decoration-2 underline-offset-4">Design your own</a> in our studio, live, in minutes.</Reveal>
     </section>
   );
 }
@@ -335,7 +341,7 @@ function DemoModal({ theme, onClose }) {
           <div className="mt-1 font-serif text-4xl md:text-5xl">{t.name}</div>
           <p className="mt-3 hidden text-ivory/75 sm:block">{t.blurb}. Every detail can be changed to suit you.</p>
           <div className="mt-4 flex flex-wrap justify-center gap-3 md:mt-6 md:justify-start">
-            <Button variant="gold" onClick={onClose}>Choose this design</Button>
+            <Button variant="gold" href={null} onClick={() => { onClose(); openStudio(t); }}>Customise this design</Button>
             <button onClick={() => setStage(0)} className="rounded-full border border-ivory/30 px-5 py-3 text-sm font-semibold hover:bg-ivory/10">↺ Replay</button>
           </div>
           <div className="mt-6 flex items-center justify-center gap-3 md:justify-start">
@@ -642,6 +648,13 @@ function CursorGlow() {
 }
 
 export default function App() {
+  const [studio, setStudio] = useState(() => location.hash.startsWith('#design'));
+  useEffect(() => { const on = () => setStudio(location.hash.startsWith('#design')); addEventListener('hashchange', on); return () => removeEventListener('hashchange', on); }, []);
+  if (studio) return (<><EmbossDefs /><Designer onClose={() => { history.replaceState(null, '', location.pathname + location.search); setStudio(false); scrollTo(0, 0); }} /></>);
+  return <Site />;
+}
+
+function Site() {
   const [demo, setDemo] = useState(null);
   const page = usePageProgress();
   return (

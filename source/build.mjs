@@ -23,7 +23,7 @@ const html = `<!DOCTYPE html>
 <title>The Satin Seal – Interactive digital invitations</title>
 <meta name="description" content="Interactive digital invitations for weddings, Nikah, Eid, birthdays, New Year and every celebration. Break the seal, untie the ribbon, reveal the moment.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&family=Pinyon+Script&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&family=Pinyon+Script&family=Great+Vibes&family=Parisienne&family=Playfair+Display:ital@0;1&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>${out}</style>
 </head>
 <body>
