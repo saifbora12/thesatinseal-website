@@ -13,7 +13,8 @@ const ORDER_URL = '#pricing';            // ← swap for your Payhip / Etsy chec
 const TURNAROUND = '3–5 working days';   // ← your real turnaround
 const PLANS = [
   { name: 'Essential', price: 35, url: 'https://payhip.com/b/23orf', note: 'A collection design, made yours', features: ['Any design from the collection', 'Your names, wording & date', 'Live countdown, map & add-to-calendar', 'One private link to share anywhere', '2 rounds of changes'] },
-  { name: 'Signature', price: 69, url: 'https://payhip.com/b/VJmTW', note: 'Our most loved', popular: true, features: ['Everything in Essential', 'RSVP with guest list', 'Your photos & a song as it opens', 'English + one more language', 'Matching Save the Date', '4 rounds of changes'] },
+  { name: 'Signature', price: 69, url: 'https://payhip.com/b/VJmTW', note: 'Our most loved', popular: true, features: ['Everything in Essential', 'RSVP with guest list', 'Your photos & a song as it opens',
+    'Scratch-to-reveal date or secret message', 'English + one more language', 'Matching Save the Date', '4 rounds of changes'] },
   { name: 'Bespoke', price: 149, url: 'https://payhip.com/b/nK0XB', note: 'Designed from scratch', features: ['Everything in Signature', 'Custom monogram wax seal', 'Colours matched to your outfits or décor', 'Every part of the day in one invite (ceremony, reception, after-party…)', 'Unlimited languages', 'Priority delivery'] },
 ];
 const ADDONS = [['Express 48-hour delivery', '+£15'], ['Extra event or day', '+£20'], ['Custom monogram seal', '+£10'], ['Thank-you card after the event', '+£15']];
@@ -431,7 +432,7 @@ function Languages() {
 
 function ShareDemo() {
   const [ref, inView] = useInView({ threshold: .5 });
-  const slug = '/aisha-and-zayn';
+  const slug = '/emily-and-james';
   const [n, setN] = useState(0);
   useEffect(() => { if (!inView) return; let k = 0; const i = setInterval(() => { k++; setN(k); if (k >= slug.length) clearInterval(i); }, 70); return () => clearInterval(i); }, [inView]);
   return (
@@ -448,6 +449,44 @@ function ShareDemo() {
   );
 }
 
+
+function ScratchDemo() {
+  const ref = useRef(null);
+  const [done, setDone] = useState(false);
+  const [hint, setHint] = useState(true);
+  useEffect(() => {
+    const cv = ref.current; if (!cv) return;
+    const ctx = cv.getContext('2d'); const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const r = cv.getBoundingClientRect(); const W = r.width, H = r.height;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    [['0', '#9c7526'], ['.25', '#e9cd7c'], ['.45', '#b8902f'], ['.6', '#f6e2a0'], ['.8', '#a9822c'], ['1', '#d9b65e']].forEach(([o, c]) => g.addColorStop(+o, c));
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    for (let y = 0; y < H; y++) { ctx.fillStyle = `rgba(${Math.random() < .5 ? '255,255,255' : '60,40,0'},${(Math.random() * .08).toFixed(3)})`; ctx.fillRect(0, y, W, 1); }
+    const cx = W / 2, cy = H / 2, rr = Math.min(W, H) * .26;
+    ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 7); ctx.fillStyle = 'rgba(255,248,225,.92)'; ctx.fill(); ctx.strokeStyle = 'rgba(140,105,35,.8)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#8a6a24'; ctx.font = `${rr * .8}px "Pinyon Script", cursive`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('E&J', cx, cy + rr * .08);
+    let last = null, moves = 0, fin = false;
+    const pt = e => { const b = cv.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; };
+    const line = (a, b) => { ctx.globalCompositeOperation = 'destination-out'; ctx.lineCap = 'round'; ctx.lineWidth = 34; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); };
+    const cleared = () => { const d = ctx.getImageData(0, 0, cv.width, cv.height).data; let n = 0, t = 0; for (let i = 3; i < d.length; i += 64) { t++; if (d[i] < 30) n++; } return n / t; };
+    const down = e => { if (fin) return; cv.setPointerCapture(e.pointerId); last = pt(e); line(last, { x: last.x + .1, y: last.y }); setHint(false); };
+    const move = e => { if (!last || fin) return; const p = pt(e); line(last, p); last = p; if (++moves % 10 === 0 && cleared() > .5) { fin = true; setDone(true); } };
+    const up = () => { last = null; if (!fin && cleared() > .5) { fin = true; setDone(true); } };
+    cv.addEventListener('pointerdown', down); cv.addEventListener('pointermove', move); cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    return () => { cv.removeEventListener('pointerdown', down); cv.removeEventListener('pointermove', move); cv.removeEventListener('pointerup', up); cv.removeEventListener('pointercancel', up); };
+  }, []);
+  return (
+    <div className="relative mt-6 h-28 overflow-hidden rounded-2xl bg-white/70 ring-1 ring-plum/10">
+      <div className="absolute inset-0 grid place-items-center text-center">
+        <div><div className="text-[10px] font-semibold uppercase tracking-[.3em] text-mauve">Save the date</div><div className="font-serif text-3xl">Saturday 12 June</div></div>
+      </div>
+      <canvas ref={ref} className={`absolute inset-0 h-full w-full touch-none transition-all duration-700 ${done ? 'scale-105 opacity-0' : 'cursor-grab'}`} aria-label="Scratch the gold to reveal the date" />
+      {hint && <span className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 animate-pulse whitespace-nowrap rounded-full bg-plum/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-ivory">Scratch me</span>}
+    </div>
+  );
+}
+
 function Features() {
   return (
     <section id="features" className="relative px-5 py-24 md:py-32">
@@ -458,7 +497,8 @@ function Features() {
         <Tile delay={150}><TileHead t="Map & calendar" s="Directions and add-to-calendar in one tap." /><MapDemo /></Tile>
         <Tile delay={200}><TileHead t="Your song" s="Music that starts as the envelope opens." /><Equaliser /></Tile>
       </div>
-      <div className="mx-auto mt-5 grid max-w-6xl gap-5 md:grid-cols-2">
+      <div className="mx-auto mt-5 grid max-w-6xl gap-5 md:grid-cols-3">
+        <Tile delay={50}><TileHead t="Scratch to reveal" s="Hide the date or a secret message under gold foil. Go on, try it." /><ScratchDemo /></Tile>
         <Tile delay={100}><TileHead t="In their language" s="English, Polish, Spanish, Urdu and more, including right-to-left scripts." /><Languages /></Tile>
         <Tile delay={200} dark><TileHead t="One private link" s="Send it anywhere. No app, no printing, no postage." /><ShareDemo /></Tile>
       </div>
