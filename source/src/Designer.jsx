@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import InviteScene from './InviteScene.jsx';
 import { derive, PALETTES } from './colours.js';
 import { useTween } from './hooks.js';
+import { salePrice, fmt, promoOn, CopyCode, PROMO } from './promo.jsx';
 
 const EMAIL = 'thesatinseal@gmail.com';
 const PLAN_LINKS = [['Essential', 35, 'https://payhip.com/b/23orf'], ['Signature', 69, 'https://payhip.com/b/VJmTW'], ['Bespoke', 149, 'https://payhip.com/b/nK0XB']];
@@ -214,8 +215,9 @@ export default function Designer({ onClose }) {
             <div className="mt-3 rounded-2xl border border-plum/10 bg-white/70 p-4">
               <div className="font-semibold">2. Choose your plan & pay securely</div>
               <div className="mt-3 grid gap-2">
-                {PLAN_LINKS.map(([n, pr, u]) => <a key={n} href={u} className="flex items-center justify-between rounded-xl border border-plum/15 px-4 py-3 transition hover:border-plum/50 hover:bg-white"><span className="font-medium">{n}{n !== 'Essential' && d.scratch ? <span className="ml-2 text-xs text-mauve">includes scratch-to-reveal</span> : null}</span><span className="font-serif text-2xl">£{pr}</span></a>)}
+                {PLAN_LINKS.map(([n, pr, u]) => <a key={n} href={u} className="flex items-center justify-between rounded-xl border border-plum/15 px-4 py-3 transition hover:border-plum/50 hover:bg-white"><span className="font-medium">{n}{n !== 'Essential' && d.scratch ? <span className="ml-2 text-xs text-mauve">includes scratch-to-reveal</span> : null}</span>{(() => { const sp = salePrice(n, pr); return sp === null ? <span className="font-serif text-2xl">£{pr}</span> : <span className="text-right"><span className="mr-2 text-sm text-plum/40 line-through">£{pr}</span><span className="font-serif text-2xl">{sp === 0 ? 'Free' : `£${fmt(sp)}`}</span></span>; })()}</a>)}
               </div>
+              {promoOn() && <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-[#140c10] px-3 py-2 text-xs text-ivory"><b className="text-gold">Black Friday:</b> Essential free for the first {PROMO.freeCount} with <CopyCode dark /> · {PROMO.salePct}% off the rest, automatically</div>}
               {d.scratch && <p className="mt-2 text-xs text-plum/55">Scratch-to-reveal is included in Signature and Bespoke.</p>}
             </div>
             <p className="mt-4 text-center text-xs text-plum/50">We’ll send you a private preview to approve before anything goes to your guests.</p>

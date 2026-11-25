@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import InviteScene, { EmbossDefs, seg, clamp } from './InviteScene.jsx';
 import { THEMES, OCCASIONS } from './themes.js';
 import Designer from './Designer.jsx';
+import { PromoBar, PromoPanel, CopyCode, salePrice, promoOn, fmt, PROMO } from './promo.jsx';
 import { useScrollProgress, usePageProgress, useInView, useTween, useCountUp, useNow, useTilt, useMagnet } from './hooks.js';
 
 /* ------------------------------------------------------------------ */
@@ -25,6 +26,7 @@ const FAQS = [
   ['Can one invite cover several events?', 'Yes. Ceremony and reception, a welcome dinner, a Christmas Eve party and Boxing Day, or a Mehndi, Nikah and Walima: each gets its own section with its own time and venue. Choose Bespoke and we’ll design the whole celebration as one invitation.'],
   ['Can it be in another language?', 'Yes. Signature includes a second language and Bespoke includes as many as you need, from Polish and Spanish to Urdu and Arabic, including right-to-left scripts.'],
   ['How do RSVPs work?', 'Guests reply inside the invitation, saying who’s coming and how many, and you receive every reply.'],
+  ...(promoOn() ? [['How does the Black Friday offer work?', `The first ${PROMO.freeCount} people to check out the ${PROMO.freePlan} plan with code ${PROMO.code} pay nothing. ${PROMO.salePlans.join(' and ')} are ${PROMO.salePct}% off automatically. The offer ends at 11:59pm on Monday 30 November 2026 (UK time) or when the free codes run out. You still get the full service: your private preview and rounds of changes.`]] : []),
   ['How do I order?', `Choose your plan and check out securely. You'll instantly get a short guide telling you what to send us at ${EMAIL}: names, date, venue and wording. Questions first? Email us any time.`],
   ['How long does it take?', `You’ll get a private draft to approve within ${TURNAROUND}. Need it sooner? Add express delivery.`],
   ['Is it only for weddings?', 'Not at all: birthdays, Christmas, New Year, engagements, christenings, baby showers, anniversaries, Eid, Diwali and more. If you’re celebrating it, we can seal it.'],
@@ -96,7 +98,9 @@ function Nav() {
   useEffect(() => { const on = () => setScrolled(scrollY > 30); on(); addEventListener('scroll', on, { passive: true }); return () => removeEventListener('scroll', on); }, []);
   const links = [['Design yours', '#design'], ['Collection', '#collection'], ['Features', '#features'], ['Pricing', '#pricing'], ['FAQ', '#faq']];
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'py-2' : 'py-4'}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'pb-2' : 'pb-4'}`}>
+      <PromoBar />
+      <div className={scrolled ? 'h-2' : 'h-4'} />
       <nav className={`mx-auto flex max-w-6xl items-center justify-between rounded-full px-5 transition-all duration-500 ${scrolled ? 'mx-3 bg-ivory/75 py-2 shadow-[0_8px_30px_-12px_rgba(58,29,42,.35)] backdrop-blur-xl md:mx-auto' : 'py-2'}`}>
         <Logo />
         <div className="hidden items-center gap-7 md:flex">
@@ -177,7 +181,7 @@ function Hero() {
             <div className={`mt-6 flex flex-wrap items-center gap-3 transition-opacity duration-500 md:mt-8 ${step === 0 || step === 4 ? 'opacity-100' : 'pointer-events-none opacity-0 md:opacity-30'}`}>
               <Button href="#design">Design your own</Button>
               <Button href="#collection" variant="ghost">Explore designs</Button>
-              <span className="text-sm text-plum/60">From <b className="text-plum">£{PRICE_FROM}</b></span>
+              {promoOn() ? <span className="rounded-full bg-[#140c10] px-3 py-1.5 text-xs font-semibold text-ivory">Black Friday: first {PROMO.freeCount} invites <b className="text-gold">FREE</b></span> : <span className="text-sm text-plum/60">From <b className="text-plum">£{PRICE_FROM}</b></span>}
             </div>
             <div className={`mt-6 hidden items-center gap-2 text-xs uppercase tracking-[.3em] text-plum/50 transition-opacity md:flex ${step === 0 ? 'opacity-100' : 'opacity-0'}`}>
               <span className="uv-scrollmouse" /> Scroll to open
@@ -555,11 +559,17 @@ function PlanCard({ plan, i }) {
           {plan.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gold px-4 py-1 text-[10px] font-bold uppercase tracking-[.2em] text-plum">Most popular</span>}
           <div className="font-serif text-3xl">{plan.name}</div>
           <div className="text-sm opacity-60">{plan.note}</div>
-          <div className="my-6 flex items-baseline gap-1"><span className="font-serif text-6xl">£{plan.price}</span><span className="text-sm opacity-60">one-off</span></div>
+          {(() => { const sp = salePrice(plan.name, plan.price); return sp === null
+            ? <div className="my-6 flex items-baseline gap-1"><span className="font-serif text-6xl">£{plan.price}</span><span className="text-sm opacity-60">one-off</span></div>
+            : <div className="my-6">
+                <span className="mb-2 inline-block rounded-full bg-[#140c10] px-3 py-1 text-[10px] font-bold uppercase tracking-[.2em] text-gold ring-1 ring-gold/40">Black Friday</span>
+                <div className="flex items-baseline gap-2"><span className="font-serif text-6xl">{sp === 0 ? 'Free' : `£${fmt(sp)}`}</span><span className="text-lg line-through opacity-50">£{plan.price}</span></div>
+                <div className="mt-1 text-xs opacity-70">{sp === 0 ? <>First {PROMO.freeCount} only · code <CopyCode dark={plan.popular} className="ml-1 align-middle" /></> : `${PROMO.salePct}% off, applied automatically`}</div>
+              </div>; })()}
           <ul className="mb-8 space-y-3 text-sm">
             {plan.features.map(f => <li key={f} className="flex gap-3"><span className={plan.popular ? 'text-gold' : 'text-mauve'}>✦</span>{f}</li>)}
           </ul>
-          <Button href={plan.url} variant={plan.popular ? 'gold' : 'dark'} className="mt-auto justify-center">Choose {plan.name}</Button>
+          <Button href={plan.url} variant={plan.popular ? 'gold' : 'dark'} className="mt-auto justify-center">{salePrice(plan.name, plan.price) === 0 ? `Claim free ${plan.name}` : `Choose ${plan.name}`}</Button>
         </div>
       </div>
     </Reveal>
@@ -666,6 +676,7 @@ function Site() {
       <main>
         <Hero />
         <Marquee />
+        <PromoPanel />
         <Collection onOpen={setDemo} />
         <Features />
         <How />

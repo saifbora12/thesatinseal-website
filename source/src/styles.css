@@ -55,3 +55,5 @@ body { background: var(--color-ivory); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+.uv-bf-shine { background: linear-gradient(100deg, transparent 30%, rgba(195,155,85,.18) 50%, transparent 70%); background-size: 250% 100%; animation: uv-sheen 5s ease-in-out infinite; }
